@@ -1,0 +1,43 @@
+<!-- fragments/cart_script.html -->
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+
+		// ✅ 商品削除ボタン（Ajax対応）
+		document.addEventListener("click", function (e) {
+			if (e.target.classList.contains("remove-item-btn")) {
+				const productId = e.target.getAttribute("data-id");
+
+				// Ajaxでカートから削除処理を実行
+				fetch("/cart/remove-ajax", {
+					method: "POST",
+					headers: { "Content-Type": "application/x-www-form-urlencoded" },
+					body: `productId=${productId}`
+				})
+					.then(res => res.json())
+					.then(data => {
+						if (data.status === "OK") {
+							refreshCartDrawer(data.cartSize); // 削除成功後、カート再描画
+						}
+					})
+					.catch(err => console.error("削除エラー:", err));
+			}
+		});
+
+		// ✅ カート内容と件数バッジを更新する共通関数（Offcanvasを開く）
+		function refreshCartDrawer(cartSize) {
+			fetch("/cart/fragment")
+				.then(res => res.text())
+				.then(html => {
+					// カート内容（offcanvas-body）を更新
+					document.querySelector(".offcanvas-body").innerHTML = html;
+
+					// 件数バッジを更新
+					document.querySelector("#cartItemCount").innerText = cartSize;
+
+					// カートを開く（再表示）
+					const drawer = new bootstrap.Offcanvas(document.getElementById("cartDrawer"));
+					drawer.show();
+				});
+		}
+	});
+</script>

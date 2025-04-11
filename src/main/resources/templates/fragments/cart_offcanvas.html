@@ -1,0 +1,68 @@
+<!-- fragments/cart_offcanvas.html -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+    <div class="offcanvas-header">
+        <h5 id="cartDrawerLabel">ショッピングカート</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+    </div>
+
+    <!-- 🛒 カート内容部分（Thymeleafフラグメント） -->
+    <div class="offcanvas-body" th:fragment="cartContent">
+
+        <!-- カートが空の場合の表示 -->
+        <div th:if="${#lists.isEmpty(cartItems)}">
+            <p>カートに商品がありません。</p>
+        </div>
+
+        <!-- カートに商品がある場合 -->
+        <div th:if="${!#lists.isEmpty(cartItems)}">
+            <div th:each="item : ${cartItems}" class="mb-3 border-bottom pb-2">
+                <strong th:text="${item.productName}">商品名</strong><br>
+                ¥<span th:text="${item.price}">価格</span> × <span th:text="${item.quantity}">1</span><br>
+
+                <!-- ✅ Ajaxによる削除ボタン -->
+                <button type="button"
+                        class="btn btn-sm btn-link text-danger remove-item-btn"
+                        th:attr="data-id=${item.productId}">
+                    削除
+                </button>
+            </div>
+
+            <hr>
+            <p class="fw-bold">合計: ¥<span th:text="${totalPrice}">0</span></p>
+            <a href="/checkout" class="btn btn-dark w-100">購入手続きへ（ログインが必要）</a>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JavaScriptは offcanvas-body の外に配置（再描画時にイベントが失われないように） -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-item-btn")) {
+                const productId = e.target.getAttribute("data-id");
+
+                // Ajaxで商品をカートから削除
+                fetch("/cart/remove-ajax", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `productId=${productId}`
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === "OK") {
+                            // カートの中身を再読み込み
+                            fetch("/cart/fragment")
+                                .then(res => res.text())
+                                .then(html => {
+                                    document.querySelector(".offcanvas-body").innerHTML = html;
+
+                                    // バッジ（右上の数字）を更新
+                                    document.querySelector("#cartItemCount").innerText = data.cartSize;
+                                });
+                        }
+                    })
+                    .catch(err => console.error("削除エラー:", err));
+            }
+        });
+    });
+</script>

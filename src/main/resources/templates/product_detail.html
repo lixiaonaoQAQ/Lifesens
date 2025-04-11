@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>商品詳細</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>商品詳細</h2>
+
+        <div class="mb-3">
+            <label>商品名:</label>
+            <p th:text="${product.productName}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>価格:</label>
+            <p th:text="${product.price} + '円'"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>商品説明:</label>
+            <p th:text="${product.description}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>在庫:</label>
+            <p th:text="${product.stockQuantity} + ' 個'"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>カテゴリ:</label>
+            <p th:text="${product.category.categoryName}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>ステータス:</label>
+            <p th:text="${product.status}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>作成日時:</label>
+            <p th:text="${product.createdAt}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>更新日時:</label>
+            <p th:text="${product.updatedAt}"></p>
+        </div>
+
+        <div class="mb-3">
+            <label>商品画像:</label>
+            <div th:if="${images != null}">
+                <img th:each="img : ${images}" th:src="@{${img.imageUrl}}" style="width: 150px; margin: 5px;">
+            </div>
+        </div>
+
+        <a href="/admin/products/list" class="btn btn-secondary">一覧に戻る</a>
+    </div>
+</body>
+
+</html>

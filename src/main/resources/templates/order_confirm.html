@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>注文確認 | Lifesens</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <h2 class="mb-4">🧾 注文確認</h2>
+	<!-- 支払いエラーがある場合に表示 -->
+	<div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <!-- 配送先情報 -->
+    <div class="row">
+      <div class="col-md-6">
+        <h5>配送先情報</h5>
+        <p th:text="'氏名：' + ${order.receiverName}"></p>
+        <p th:text="'電話番号：' + ${order.receiverPhone}"></p>
+        <p th:text="'住所：' + ${order.receiverAddress}"></p>
+        <p th:text="'配送方法：' + ${order.shippingMethod}"></p>
+        <p th:text="'支払い方法：' + ${order.paymentMethod}"></p>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- 商品内容 -->
+    <h5>商品内容</h5>
+    <ul class="list-group mb-3" th:each="item : ${items}">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <p class="mb-0" th:text="${item.productName}">商品名</p>
+          <small th:text="'数量：' + ${item.quantity}">数量</small>
+        </div>
+        <span class="text-muted">
+          ¥<span th:text="${item.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity.longValue()))}">0</span>
+        </span>
+      </li>
+    </ul>
+
+    <div class="text-end mb-4">
+      <p class="fw-bold fs-5">合計金額：¥<span th:text="${order.totalPrice}">0</span></p>
+    </div>
+
+    <!-- テスト用の支払い情報入力フォーム -->
+    <form method="post" th:action="@{/order/success}" class="border p-4 rounded bg-light needs-validation" novalidate>
+      <h5 class="mb-3">💳 支払い情報（模擬）</h5>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" id="email" name="email"
+               placeholder="example@example.com" required>
+      </div>
+
+      <!-- カード番号 + アイコン -->
+      <div class="mb-3">
+        <label class="form-label">カード情報</label>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="1234 5678 9012 3456" name="cardNumber"
+                 maxlength="19" pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{4}" title="16桁の数字を入力してください" required>
+          <span class="input-group-text">
+            <i class="bi bi-credit-card-2-front-fill"></i>
+          </span>
+        </div>
+        <div class="mt-1">
+          <img src="https://img.icons8.com/color/36/visa.png" alt="Visa">
+          <img src="https://img.icons8.com/color/36/mastercard-logo.png" alt="MasterCard">
+          <img src="https://img.icons8.com/color/36/jcb.png" alt="JCB">
+		  <br>
+		  <small class="text-muted">※テスト用カード番号：4242 4242 4242 4242</small>
+        </div>
+      </div>
+
+      <!-- 有効期限 + セキュリティコード -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">有効期限</label>
+          <input type="text" class="form-control" placeholder="MM/YY" name="expiry"
+                 maxlength="5" pattern="\d{2}/\d{2}" title="MM/YY の形式で入力してください（例：12/25）" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">セキュリティコード</label>
+          <input type="text" class="form-control" placeholder="123" name="cvc"
+                 maxlength="3" pattern="\d{3}" title="3桁の数字を入力してください" required>
+        </div>
+      </div>
+
+      <!-- 名義人・国 -->
+      <div class="mb-3">
+        <label for="cardName" class="form-label">カード名義</label>
+        <input type="text" class="form-control" id="cardName" name="cardName"
+               placeholder="山田 太郎" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="country" class="form-label">国または地域</label>
+        <input type="text" class="form-control" id="country" name="country" value="日本" required>
+      </div>
+
+      <!-- ボタン -->
+      <div class="d-flex justify-content-between">
+        <a href="/checkout" class="btn btn-secondary">戻る</a>
+        <button type="submit" class="btn btn-primary btn-lg">支払う</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 追加：Bootstrap のフォーム検証スクリプト -->
+  <script>
+    (function () {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

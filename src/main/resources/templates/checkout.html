@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>購入手続き | Lifesens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+
+<body>
+<!-- ✅ 共通导航栏 -->
+<div th:replace="fragments/header.html :: headerFragment"></div>
+
+<div class="container mt-5">
+    <h2 class="mb-4">🧾 購入手続き</h2>
+    <form method="post" th:action="@{/checkout/confirm}">
+        <div class="row">
+            <!-- 購入者情報 -->
+            <div class="col-md-7">
+                <h4 class="mb-3">購入者情報</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">姓</label>
+                        <input type="text" name="lastName" class="form-control" required
+                               th:value="${userInfo != null and userInfo.fullName != null} ? ${#strings.substringBefore(userInfo.fullName, ' ')} : ''" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">名</label>
+                        <input type="text" name="firstName" class="form-control" required
+                               th:value="${userInfo != null and userInfo.fullName != null} ? ${#strings.substringAfter(userInfo.fullName, ' ')} : ''" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">メールアドレス</label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">電話番号</label>
+                        <input type="text" name="phoneNumber" class="form-control"
+                               th:value="${userInfo != null} ? ${userInfo.phoneNumber} : ''" />
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- 配送情報 -->
+                <h4 class="mb-3">配送情報</h4>
+                <div class="mb-3">
+                    <label class="form-label">郵便番号</label>
+                    <input type="text" name="zipcode" class="form-control" placeholder="例: 123-4567" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">都道府県</label>
+                    <input type="text" name="prefecture" class="form-control"
+                           th:value="${userInfo != null} ? ${userInfo.address} : ''" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">市区町村</label>
+                    <input type="text" name="city" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">番地・建物名</label>
+                    <input type="text" name="address" class="form-control" />
+                </div>
+
+                <hr class="my-4">
+
+                <!-- 配送方法 -->
+                <h4 class="mb-3">配送方法</h4>
+                <div class="form-check">
+                    <input type="radio" name="shippingMethod" value="packet" class="form-check-input" checked />
+                    <label class="form-check-label">ゆうパケット（¥360）</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" name="shippingMethod" value="pack" class="form-check-input" />
+                    <label class="form-check-label">ゆうパック（¥720）</label>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- 支払い方法 -->
+                <h4 class="mb-3">お支払い方法</h4>
+                <div class="form-check">
+                    <input type="radio" name="paymentMethod" value="card" class="form-check-input" checked />
+                    <label class="form-check-label">クレジットカード（VISA, Master, JCBなど）</label>
+                </div>
+            </div>
+
+            <!-- 注文内容 -->
+            <div class="col-md-5">
+                <h4 class="mb-3">🛍 注文内容</h4>
+                <ul class="list-group mb-3" th:each="item : ${cartItems}">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <img th:src="@{${item.imageUrl}}" alt="商品画像" class="me-3"
+                                 style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h6 class="my-0" th:text="${item.productName}">商品名</h6>
+                                <label class="form-label">数量:</label>
+                                <select class="form-select form-select-sm quantity-select"
+                                        th:attr="data-id=${item.productId}"
+                                        style="width: 80px; display: inline-block;">
+                                    <option th:each="i : ${#numbers.sequence(1,10)}"
+                                            th:value="${i}"
+                                            th:text="${i}"
+                                            th:selected="${i == item.quantity}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <span class="text-muted">
+                            ¥<span th:text="${item.price.multiply(new java.math.BigDecimal(item.quantity))}">0</span>
+                        </span>
+                    </li>
+                </ul>
+
+                <hr>
+                <p class="text-end fw-bold">商品小計: ¥<span th:text="${totalPrice}">0</span></p>
+                <p class="text-end text-muted">※ 送料・手数料は次ページで計算</p>
+				<!-- クーポンコード入力 -->
+				<div class="mb-3">
+				    <label class="form-label">クーポンコード</label>
+				    <input type="text" class="form-control" name="couponCode" placeholder="例: ABC123" 
+				           th:value="${appliedCouponCode}" />
+				    <div class="form-text">※ 有効なクーポンを入力してください</div>
+				</div>
+
+				<!-- クーポン割引結果表示 -->
+				<div th:if="${discountAmount != null}">
+				    <p class="text-end text-success">クーポン割引: -¥<span th:text="${discountAmount}">0</span></p>
+				</div>
+				<div th:if="${couponError}" class="alert alert-danger" th:text="${couponError}"></div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">注文確認へ進む</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ カートOffcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+    <div class="offcanvas-header">
+        <h5 id="cartDrawerLabel">ショッピングカート</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+    </div>
+    <div class="offcanvas-body">
+        <p>読み込み中...</p>
+    </div>
+</div>
+
+<!-- ✅ 脚本区域 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
+        const cartDrawerEl = document.getElementById("cartDrawer");
+
+        if (cartButton && cartDrawerEl) {
+            const cartDrawer = new bootstrap.Offcanvas(cartDrawerEl);
+            cartButton.addEventListener("click", function () {
+                fetch("/cart/fragment")
+                    .then(res => res.text())
+                    .then(html => {
+                        cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
+                        cartDrawer.show();
+                    })
+                    .catch(err => console.error("カート内容取得失敗:", err));
+            });
+        }
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-item-btn")) {
+                const productId = e.target.getAttribute("data-id");
+
+                fetch("/cart/remove-ajax", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `productId=${productId}`
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === "OK") {
+                            fetch("/cart/fragment")
+                                .then(res => res.text())
+                                .then(html => {
+                                    cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
+                                    document.querySelector("#cartItemCount").innerText = data.cartSize;
+                                    if (data.cartSize === 0) location.reload();
+                                });
+                        }
+                    });
+            }
+        });
+
+        document.querySelectorAll(".quantity-select").forEach(function (select) {
+            select.addEventListener("change", function () {
+                const productId = this.getAttribute("data-id");
+                const quantity = this.value;
+
+                fetch("/cart/update-quantity", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `productId=${productId}&quantity=${quantity}`
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === "OK") {
+                            location.reload();
+                        }
+                    });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

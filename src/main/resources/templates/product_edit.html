@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>商品編集</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container">
+		<h2>商品編集</h2>
+		<form th:action="@{'/admin/products/edit/' + ${product.productId}}" method="post">
+			<input type="hidden" name="productId" th:value="${product.productId}">
+
+			<div class="mb-3">
+				<label for="productName" class="form-label">商品名</label>
+				<input type="text" id="productName" name="productName" class="form-control"
+					th:value="${product.productName}" required>
+			</div>
+
+			<div class="mb-3">
+				<label for="price" class="form-label">価格</label>
+				<input type="number" id="price" name="price" class="form-control" th:value="${product.price}" required>
+			</div>
+
+			<div class="mb-3">
+				<label for="stockQuantity" class="form-label">在庫数量</label>
+				<input type="number" id="stockQuantity" name="stockQuantity" class="form-control"
+					th:value="${product.stockQuantity}" required>
+			</div>
+
+			<div class="mb-3">
+				<label for="description" class="form-label">商品説明</label>
+				<textarea id="description" name="description" class="form-control" th:text="${product.description}"
+					required></textarea>
+			</div>
+
+			<div class="mb-3">
+				<label for="categoryId" class="form-label">カテゴリ</label>
+				<select id="categoryId" name="category.categoryId" class="form-control">
+					<option value="">--カテゴリを選択--</option>
+					<option th:each="category : ${categories}" 
+					        th:value="${category.categoryId}"
+					        th:text="${category.categoryName}"
+					        th:selected="${product.category?.categoryId == category.categoryId}">
+					</option>
+				</select>
+			</div>
+
+			<div class="mb-3">
+				<label for="status" class="form-label">ステータス</label>
+				<select id="status" name="status" class="form-control">
+					<option value="販売中" th:selected="${product.status == '販売中'}">販売中</option>
+					<option value="売り切れ" th:selected="${product.status == '売り切れ'}">売り切れ</option>
+				</select>
+			</div>
+
+			<button type="submit" class="btn btn-primary">更新</button>
+			<a href="/admin/products/list" class="btn btn-secondary">キャンセル</a>
+		</form>
+	</div>
+</body>
+
+</html>

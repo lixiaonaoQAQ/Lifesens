@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>商品一覧</title>
+	<meta charset="UTF-8">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+
+	<!-- ✅ 共通ヘッダー -->
+	<div th:replace="fragments/header.html :: headerFragment"></div>
+	<div class="container mt-4">
+		<h2>商品一覧</h2>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>商品名</th>
+					<th>主画像</th>
+					<th>価格</th>
+					<th>在庫数量</th>
+					<th>商品説明</th>
+					<th>カテゴリ</th>
+					<th>ステータス</th>
+					<th>作成日時</th>
+					<th>更新日時</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="product : ${products}">
+					<td th:text="${product.productId}"></td>
+					<td>
+						<a th:href="@{'/admin/products/detail/' + ${product.productId}}"
+							th:text="${product.productName}"></a>
+					</td>
+					<td>
+						<img th:if="${product.mainImageUrl}" th:src="@{${product.mainImageUrl}}" style="width: 100px;">
+					</td>
+					<td th:text="${product.price}"></td>
+					<td th:text="${product.stockQuantity}"></td>
+					<td th:text="${product.description}"></td>
+					<td th:text="${product.category.categoryName}"></td>
+					<td th:text="${product.status}"></td>
+					<td th:text="${product.createdAt}"></td>
+					<td th:text="${product.updatedAt}"></td>
+					<td>
+						<a th:href="@{'/admin/products/edit/' + ${product.productId}}">編集</a> |
+						<a th:href="@{'/admin/products/delete/' + ${product.productId}}"
+							onclick="return confirm('本当に削除しますか？');">削除</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>

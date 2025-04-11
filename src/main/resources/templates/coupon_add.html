@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>クーポン登録</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">クーポン登録</h2>
+
+  <form th:action="@{/admin/coupons/save}" method="post">
+    <div class="mb-3">
+      <label class="form-label">クーポンコード</label>
+      <input type="text" class="form-control" name="couponCode" th:value="${coupon.couponCode}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">割引率（例：0.10 は10%）</label>
+      <input type="number" step="0.01" min="0.01" max="1.00" class="form-control" name="discountRate"
+             th:value="${coupon.discountRate}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">開始日</label>
+      <input type="datetime-local" class="form-control" name="startDate"
+             th:if="${coupon.startDate != null}"
+             th:value="${#temporals.format(coupon.startDate, 'yyyy-MM-dd''T''HH:mm')}">
+      <input type="datetime-local" class="form-control" name="startDate"
+             th:unless="${coupon.startDate != null}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">終了日</label>
+      <input type="datetime-local" class="form-control" name="endDate"
+             th:if="${coupon.endDate != null}"
+             th:value="${#temporals.format(coupon.endDate, 'yyyy-MM-dd''T''HH:mm')}">
+      <input type="datetime-local" class="form-control" name="endDate"
+             th:unless="${coupon.endDate != null}">
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <a href="/admin/coupons" class="btn btn-secondary">← 戻る</a>
+      <button type="submit" class="btn btn-primary">登録</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

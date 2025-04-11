@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>在庫履歴</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+	<h2>在庫履歴</h2>
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>商品名</th>
+				<th>操作</th>
+				<th>数量</th>
+				<th>変更後在庫</th>
+				<th>仕入価格</th>
+				<th>販売価格</th>
+				<th>注文ID</th>
+				<th>作成日</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="record : ${inventoryList}">
+				<td th:text="${record.inventoryId}"></td>
+				<td th:text="${record.product.productName}"></td>
+				<td th:text="${record.operationCategory}"></td>
+				<td th:text="${record.stockChange}"></td>
+				<td th:text="${record.stockAfter}"></td>
+				<td th:text="${record.purchasePrice}"></td>
+				<td th:text="${record.salePrice}"></td>
+				<td th:text="${record.orderId}"></td>
+				<td th:text="${record.createdAt}"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<a href="/admin/inventory/change">在庫変更</a>
+	<a href="/admin">管理画面に戻る</a>
+</body>
+
+</html>

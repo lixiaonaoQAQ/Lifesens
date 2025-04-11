@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>在庫変更</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+	<h2>在庫変更</h2>
+
+	<form th:action="@{/admin/inventory/change}" method="post">
+		<label for="productId">商品:</label>
+		<select id="productId" name="productId" required>
+			<option value="">-- 商品を選択 --</option>
+			<option th:each="product : ${products}" th:value="${product.productId}" th:text="${product.productName}">
+			</option>
+		</select>
+
+		<label for="operationCategory">操作:</label>
+		<select id="operationCategory" name="operationCategory" required>
+			<option value="入庫">入庫</option>
+			<option value="出庫">出庫</option>
+		</select>
+
+		<label for="stockChange">数量:</label>
+		<input type="number" id="stockChange" name="stockChange" required>
+
+		<label for="purchasePrice">仕入価格 (オプション):</label>
+		<input type="number" id="purchasePrice" name="purchasePrice" step="0.01">
+
+		<button type="submit">変更を登録</button>
+	</form>
+
+	<a href="/admin/inventory">在庫履歴を見る</a>
+</body>
+
+</html>

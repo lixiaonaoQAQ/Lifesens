@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品一覧</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+
+<body>
+    <!-- ✅ 共通ヘッダーを読み込み -->
+    <div th:replace="fragments/header.html :: headerFragment"></div>
+
+    <div class="container mt-4">
+        <h2>人気商品</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="product : ${products}">
+                <div class="card h-100">
+                    <img th:src="@{${product.mainImageUrl}}" class="card-img-top" alt="商品画像"
+                         style="height: 300px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.productName}">商品名</h5>
+                        <p class="card-text">￥<span th:text="${product.price}"></span></p>
+                        <a th:href="@{'/product-detail/' + ${product.productId}}" class="btn btn-primary">詳細を見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ カートOffcanvas（headerに依存しない構成） -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+        <div class="offcanvas-header">
+            <h5 id="cartDrawerLabel">ショッピングカート</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div th:if="${#lists.isEmpty(cartItems)}">
+                <p>カートに商品がありません。</p>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(cartItems)}">
+                <div th:each="item : ${cartItems}" class="mb-3 border-bottom pb-2">
+                    <strong th:text="${item.productName}">商品名</strong><br>
+                    ¥<span th:text="${item.price}">価格</span> × <span th:text="${item.quantity}">1</span><br>
+                    <form th:action="@{/cart/remove}" method="post" class="d-inline">
+                        <input type="hidden" name="productId" th:value="${item.productId}" />
+                        <button type="submit" class="btn btn-sm btn-link text-danger">削除</button>
+                    </form>
+                </div>
+
+                <hr>
+                <p class="fw-bold">合計: ¥<span th:text="${totalPrice}">0</span></p>
+                <a href="/checkout" class="btn btn-dark w-100">購入手続きへ (ログインが必要)</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p>&copy; 2025 Lifesens - All Rights Reserved</p>
+    </footer>
+
+    <!-- ✅ スクリプトはbodyの最後に配置して、DOM読み込み後に実行 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
+            const cartDrawerEl = document.getElementById("cartDrawer");
+
+            if (cartButton && cartDrawerEl) {
+                const cartDrawer = new bootstrap.Offcanvas(cartDrawerEl);
+
+                cartButton.addEventListener("click", function () {
+                    fetch("/cart/fragment")
+                        .then(res => res.text())
+                        .then(html => {
+                            cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
+                            cartDrawer.show(); // ✅ Offcanvasを表示
+                        })
+                        .catch(err => console.error("カートの読み込み失敗:", err));
+                });
+            }
+        });
+    </script>
+	<div th:replace="fragments/cart_script.html"></div>
+</body>
+
+</html>

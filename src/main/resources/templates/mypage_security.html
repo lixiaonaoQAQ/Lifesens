@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>パスワード変更 - Lifesens</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <style>
+        body {
+            background-color: #f5f6f8;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: #ffffff;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            display: block;
+            color: #000;
+        }
+
+        .sidebar a:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ 共通ヘッダーの読み込み -->
+    <div th:replace="fragments/header.html :: headerFragment"></div>
+
+    <!-- ✅ メインコンテンツ部分 -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3 sidebar">
+                <a href="#">注文履歴</a>
+                <a th:href="@{/mypage/info}">会員情報</a>
+                <a href="#">クーポン</a>
+                <a th:href="@{/mypage/security}">セキュリティ</a>
+            </div>
+
+            <div class="col-md-9">
+                <h4>パスワードを変更する</h4>
+
+                <div th:if="${error}" class="alert alert-danger">
+                    <span th:text="${error}"></span>
+                </div>
+
+                <div th:if="${message}" class="alert alert-success">
+                    <span th:text="${message}"></span>
+                </div>
+
+                <form th:action="@{/mypage/security}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">現在のパスワード</label>
+                        <input type="password" name="currentPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">新しいパスワード</label>
+                        <input type="password" name="newPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">新しいパスワード（確認）</label>
+                        <input type="password" name="confirmPassword" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">変更を保存する</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ カートのOffcanvas（他のページと同じ構造にする必要あり）-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+        <div class="offcanvas-header">
+            <h5 id="cartDrawerLabel">ショッピングカート</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+        </div>
+        <div class="offcanvas-body"></div>
+    </div>
+
+    <!-- ✅ Ajaxでショッピングカートを更新する処理 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
+            const cartDrawerEl = document.getElementById("cartDrawer");
+
+            if (cartButton && cartDrawerEl) {
+                const cartDrawer = new bootstrap.Offcanvas(cartDrawerEl);
+                cartButton.addEventListener("click", function () {
+                    fetch("/cart/fragment")
+                        .then(res => res.text())
+                        .then(html => {
+                            cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
+                            cartDrawer.show();
+                        })
+                        .catch(err => console.error("カートの更新に失敗しました:", err));
+                });
+            }
+        });
+    </script>
+    <div th:replace="fragments/cart_script.html"></div>
+</body>
+</html>

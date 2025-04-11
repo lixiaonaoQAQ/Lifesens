@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ようこそ Lifesensへ</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+
+<body>
+	<!-- ✅ 共通ヘッダーを読み込み -->
+	<div th:replace="fragments/header.html :: headerFragment"></div>
+
+	<header class="bg-primary text-white text-center py-5">
+		<h1>ようこそ Lifesensへ</h1>
+		<p>お気に入りのアイテムを見つけましょう！</p>
+		<a href="/product-list" class="btn btn-light btn-lg">商品一覧へ</a>
+	</header>
+
+	<div class="container mt-5">
+		<h2 class="text-center mb-4">人気商品</h2>
+		<div class="row">
+			<div class="col-md-4" th:each="product : ${products}">
+				<div class="card">
+					<img th:src="@{${product.mainImageUrl}}" class="card-img-top" alt="商品画像"
+						style="height: 300px; object-fit: cover;">
+					<div class="card-body">
+						<h5 class="card-title" th:text="${product.productName}">商品名</h5>
+						<p class="card-text">¥<span th:text="${product.price}">0</span></p>
+						<a th:href="@{'/product-detail/' + ${product.productId}}" class="btn btn-primary">詳細を見る</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ✅ 商品詳細ページと同様に、カートのオフキャンバスを追加 -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+		<div class="offcanvas-header">
+			<h5 id="cartDrawerLabel">ショッピングカート</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
+		</div>
+		<div class="offcanvas-body">
+			<!-- 初期状態では空。JavaScriptによって動的に内容を取得 -->
+			<p>読み込み中...</p>
+		</div>
+	</div>
+
+	<footer class="bg-dark text-white text-center py-3 mt-5">
+		<p>&copy; 2025 Lifesens - All Rights Reserved</p>
+	</footer>
+
+	<!-- ✅ 商品詳細ページのカート連携ロジックを完全再現 -->
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
+			const cartDrawerEl = document.getElementById("cartDrawer");
+
+			if (cartButton && cartDrawerEl) {
+				const cartDrawer = new bootstrap.Offcanvas(cartDrawerEl);
+
+				cartButton.addEventListener("click", function () {
+					fetch("/cart/fragment")
+						.then(res => res.text())
+						.then(html => {
+							cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
+							cartDrawer.show();
+						})
+						.catch(err => console.error("カート内容取得失敗:", err));
+				});
+			}
+		});
+	</script>
+
+	<!-- ✅ カート削除・更新などのAjax処理 -->
+	<div th:replace="fragments/cart_script.html"></div>
+</body>
+
+</html>

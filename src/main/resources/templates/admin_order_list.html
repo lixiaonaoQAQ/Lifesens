@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注文一覧 | 管理者</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">注文一覧</h2>
+
+    <!-- ステータス絞り込みフォーム -->
+    <form method="get" th:action="@{/admin/orders}" class="row g-3 align-items-center mb-4">
+        <div class="col-auto">
+            <label for="status" class="col-form-label fw-bold">ステータスで絞り込み：</label>
+        </div>
+        <div class="col-auto">
+            <select name="status" id="status" class="form-select">
+                <option value="ALL" th:selected="${selectedStatus == null or selectedStatus == 'ALL'}">すべて</option>
+                <option value="未発送" th:selected="${selectedStatus == '未発送'}">未発送</option>
+                <option value="発送準備中" th:selected="${selectedStatus == '発送準備中'}">発送準備中</option>
+                <option value="発送済み" th:selected="${selectedStatus == '発送済み'}">発送済み</option>
+                <option value="キャンセル" th:selected="${selectedStatus == 'キャンセル'}">キャンセル</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">絞り込み</button>
+        </div>
+    </form>
+
+    <!-- 注文一覧テーブル -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>注文ID</th>
+            <th>ユーザー名</th>
+            <th>注文日時</th>
+            <th>合計金額</th>
+            <th>ステータス</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.orderId}">1</td>
+            <td th:text="${order.receiverName}">username</td>
+            <td th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}">2025/01/01</td>
+            <td>¥<span th:text="${order.totalPrice}">0</span></td>
+            <td th:text="${order.status}">未発送</td>
+            <td>
+                <a th:href="@{'/admin/orders/' + ${order.orderId}}" class="btn btn-sm btn-primary">詳細</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/admin" class="btn btn-secondary">← 戻る</a>
+</div>
+</body>
+</html>

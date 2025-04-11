@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>カテゴリ管理</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+
+<body>
+	<div class="container">
+		<h2>カテゴリ管理</h2>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>カテゴリID</th>
+					<th>カテゴリ名</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="category : ${categories}">
+					<td th:text="${category.categoryId}"></td>
+					<td>
+						<form th:action="@{/admin/categories/update}" method="post">
+							<input type="hidden" name="categoryId" th:value="${category.categoryId}">
+							<input type="text" name="categoryName" th:value="${category.categoryName}"
+								class="form-control" required>
+							<button type="submit" class="btn btn-primary btn-sm mt-2">更新</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>

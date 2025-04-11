@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注文履歴 - Lifesens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .order-box {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .order-summary {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .product-img {
+            width: 80px;
+            height: auto;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        .product-info {
+            margin-left: 15px;
+        }
+        .order-status {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<!-- ✅ 共通ヘッダー -->
+<div th:replace="fragments/header.html :: headerFragment"></div>
+
+<div class="container mt-4">
+    <h3>ご注文履歴</h3>
+
+    <div th:if="${orders != null}">
+        <div th:each="order : ${orders}" class="order-box">
+            <div class="d-flex justify-content-between mb-2">
+                <div>
+                    <span class="me-3"><strong>注文番号:</strong> <span th:text="${order.orderId}">12345</span></span>
+                    <span><strong>注文日:</strong> <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd')}">2025-04-07</span></span>
+                </div>
+                <div>
+                    <span><strong>合計金額:</strong> ¥<span th:text="${order.totalPrice}">2500</span></span>
+                </div>
+            </div>
+
+            <div th:each="item : ${order.items}" class="d-flex align-items-center border-top pt-2 mt-2">
+                <img th:src="@{${item.imageUrl}}" alt="商品画像" class="product-img">
+                <div class="product-info">
+                    <div th:text="${item.productName}" class="fw-bold">商品名</div>
+                    <div>数量: <span th:text="${item.quantity}">1</span></div>
+                    <div>価格: ¥<span th:text="${item.unitPrice}">1000</span></div>
+                </div>
+            </div>
+
+            <div class="text-end mt-3">
+                <span class="order-status" th:text="${order.status}">未発送</span>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${orders == null or orders.isEmpty()}">
+        <p>注文履歴がありません。</p>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/mypage}" class="btn btn-secondary">マイページへ戻る</a>
+    </div>
+</div>
+
+</body>
+</html>
