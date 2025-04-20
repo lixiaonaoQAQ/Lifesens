@@ -87,4 +87,10 @@ public class ProductServiceImpl implements ProductService {
 
 		return productInfoRepository.save(product);
 	}
+	// ProductServiceImpl.java
+	@Override
+	public List<ProductInfo> findByCategoryId(Integer categoryId) {
+	    return productInfoRepository.findByCategory_CategoryId(categoryId);
+	}
+
 }

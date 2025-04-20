@@ -8,6 +8,7 @@
 </head>
 
 <body>
+	<div th:replace="fragments/admin_header :: adminHeader"></div>
 	<h2>在庫変更</h2>
 
 	<form th:action="@{/admin/inventory/change}" method="post">

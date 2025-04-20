@@ -13,6 +13,11 @@ public interface CategoryService {
     List<Category> getAllCategories();
 
     /**
+     * ホーム画面などで使う用のカテゴリ取得（findAllエイリアス）
+     */
+    List<Category> findAll();
+
+    /**
      * 指定されたカテゴリIDのカテゴリ名を更新する
      * @param categoryId カテゴリID
      * @param categoryName 新しいカテゴリ名

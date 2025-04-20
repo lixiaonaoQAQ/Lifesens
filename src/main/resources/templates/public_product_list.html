@@ -14,7 +14,10 @@
     <div th:replace="fragments/header.html :: headerFragment"></div>
 
     <div class="container mt-4">
-        <h2>人気商品</h2>
+        <!-- ✅ 分類別タイトル -->
+        <h2 class="text-center mt-4" th:if="${currentCategoryName != null}" th:text="'カテゴリ：' + ${currentCategoryName}">カテゴリ：</h2>
+        <h2 class="text-center mt-4" th:if="${currentCategoryName == null}">人気商品</h2>
+
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <div class="col" th:each="product : ${products}">
                 <div class="card h-100">
@@ -30,7 +33,7 @@
         </div>
     </div>
 
-    <!-- ✅ カートOffcanvas（headerに依存しない構成） -->
+    <!-- ✅ カートOffcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
         <div class="offcanvas-header">
             <h5 id="cartDrawerLabel">ショッピングカート</h5>
@@ -62,7 +65,7 @@
         <p>&copy; 2025 Lifesens - All Rights Reserved</p>
     </footer>
 
-    <!-- ✅ スクリプトはbodyの最後に配置して、DOM読み込み後に実行 -->
+    <!-- ✅ スクリプト -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
@@ -76,14 +79,15 @@
                         .then(res => res.text())
                         .then(html => {
                             cartDrawerEl.querySelector(".offcanvas-body").innerHTML = html;
-                            cartDrawer.show(); // ✅ Offcanvasを表示
+                            cartDrawer.show();
                         })
                         .catch(err => console.error("カートの読み込み失敗:", err));
                 });
             }
         });
     </script>
-	<div th:replace="fragments/cart_script.html"></div>
+
+    <div th:replace="fragments/cart_script.html"></div>
 </body>
 
 </html>

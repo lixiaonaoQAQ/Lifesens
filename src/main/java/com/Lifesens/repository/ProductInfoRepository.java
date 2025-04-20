@@ -13,4 +13,8 @@ public interface ProductInfoRepository extends JpaRepository<ProductInfo, Intege
 
     @Query("SELECT p FROM ProductInfo p JOIN FETCH p.category")
     List<ProductInfo> findAllWithCategory();
+ // ProductInfoRepository.java
+    List<ProductInfo> findByCategory_CategoryId(Integer categoryId);
+
+
 }

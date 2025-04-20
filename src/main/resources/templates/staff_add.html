@@ -8,6 +8,7 @@
 </head>
 
 <body>
+	<div th:replace="fragments/admin_header :: adminHeader"></div>
 	<div class="container">
 		<h2 class="my-4">スタッフ登録フォーム</h2>
 		<form th:action="@{/admin/staff/add}" method="post" th:object="${staff}">

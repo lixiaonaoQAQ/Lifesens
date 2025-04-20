@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-
 <head>
 	<meta charset="UTF-8">
 	<title>ようこそ Lifesensへ</title>
@@ -10,49 +9,93 @@
 </head>
 
 <body>
-	<!-- ✅ 共通ヘッダーを読み込み -->
+	<!-- ✅ 共通ヘッダー -->
 	<div th:replace="fragments/header.html :: headerFragment"></div>
 
-	<header class="bg-primary text-white text-center py-5">
-		<h1>ようこそ Lifesensへ</h1>
-		<p>お気に入りのアイテムを見つけましょう！</p>
-		<a href="/product-list" class="btn btn-light btn-lg">商品一覧へ</a>
-	</header>
+	<!-- ✅ TOPバナー（5枚対応、Lunasens風） -->
+	<div id="topCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+		<div class="carousel-inner" style="aspect-ratio: 16/7; max-height: 700px; overflow: hidden;">
+			<div class="carousel-item active">
+				<img src="/images/banner1.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="バナー1">
+			</div>
+			<div class="carousel-item">
+				<img src="/images/banner2.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="バナー2">
+			</div>
+			<div class="carousel-item">
+				<img src="/images/banner3.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="バナー3">
+			</div>
+			<div class="carousel-item">
+				<img src="/images/banner4.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="バナー4">
+			</div>
+			<div class="carousel-item">
+				<img src="/images/banner5.jpg" class="d-block w-100 h-100" style="object-fit: cover;" alt="バナー5">
+			</div>
+		</div>
 
+		<!-- 🔘 インジケーター -->
+		<div class="carousel-indicators">
+			<button type="button" data-bs-target="#topCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="スライド1"></button>
+			<button type="button" data-bs-target="#topCarousel" data-bs-slide-to="1" aria-label="スライド2"></button>
+			<button type="button" data-bs-target="#topCarousel" data-bs-slide-to="2" aria-label="スライド3"></button>
+			<button type="button" data-bs-target="#topCarousel" data-bs-slide-to="3" aria-label="スライド4"></button>
+			<button type="button" data-bs-target="#topCarousel" data-bs-slide-to="4" aria-label="スライド5"></button>
+		</div>
+
+		<!-- ⬅️➡️ コントロールボタン -->
+		<button class="carousel-control-prev" type="button" data-bs-target="#topCarousel" data-bs-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">前へ</span>
+		</button>
+		<button class="carousel-control-next" type="button" data-bs-target="#topCarousel" data-bs-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">次へ</span>
+		</button>
+	</div>
+
+	<!-- ✅ 商品カテゴリ表示 -->
 	<div class="container mt-5">
-		<h2 class="text-center mb-4">人気商品</h2>
-		<div class="row">
-			<div class="col-md-4" th:each="product : ${products}">
-				<div class="card">
-					<img th:src="@{${product.mainImageUrl}}" class="card-img-top" alt="商品画像"
-						style="height: 300px; object-fit: cover;">
-					<div class="card-body">
-						<h5 class="card-title" th:text="${product.productName}">商品名</h5>
-						<p class="card-text">¥<span th:text="${product.price}">0</span></p>
-						<a th:href="@{'/product-detail/' + ${product.productId}}" class="btn btn-primary">詳細を見る</a>
-					</div>
-				</div>
+		<h2 class="text-center mb-2">カテゴリで選ぶ</h2>
+		<p class="text-center text-muted mb-4">多彩なスタイルとデザインで、あなたの魅力を最大限に引き出すランジェリーを見つけてください。</p>
+		<div class="row text-center">
+			<div class="col-6 col-md-4 col-lg-2 mb-4" th:each="category, iterStat : ${categoryList}">
+				<a th:href="@{'/product-list?category=' + ${category.categoryId}}">
+					<img th:src="@{${category.imageFileName}}" class="img-fluid rounded"
+						style="height: 180px; object-fit: cover;" th:alt="${category.categoryName}">
+					<p class="mt-2" th:text="${category.categoryName}">カテゴリ名</p>
+				</a>
 			</div>
 		</div>
 	</div>
 
-	<!-- ✅ 商品詳細ページと同様に、カートのオフキャンバスを追加 -->
+	<!-- ✅ サイトお知らせ（通知一覧） -->
+	<div class="container mt-5">
+		<h4 class="text-center mb-3">お知らせ</h4>
+		<div th:if="${#lists.isEmpty(publicNotices)}" class="text-center">
+			<p>現在、お知らせはありません。</p>
+		</div>
+		<div th:each="notice : ${publicNotices}" class="alert alert-info text-center">
+			<strong th:text="${notice.title}">タイトル</strong><br>
+			<span th:text="${notice.content}">内容</span>
+		</div>
+	</div>
+
+	<!-- ✅ カートオフキャンバス -->
 	<div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
 		<div class="offcanvas-header">
 			<h5 id="cartDrawerLabel">ショッピングカート</h5>
 			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
 		</div>
 		<div class="offcanvas-body">
-			<!-- 初期状態では空。JavaScriptによって動的に内容を取得 -->
 			<p>読み込み中...</p>
 		</div>
 	</div>
 
+	<!-- ✅ フッター -->
 	<footer class="bg-dark text-white text-center py-3 mt-5">
 		<p>&copy; 2025 Lifesens - All Rights Reserved</p>
 	</footer>
 
-	<!-- ✅ 商品詳細ページのカート連携ロジックを完全再現 -->
+	<!-- ✅ カートのAjax処理 -->
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			const cartButton = document.querySelector('[data-bs-target="#cartDrawer"]');
@@ -60,7 +103,6 @@
 
 			if (cartButton && cartDrawerEl) {
 				const cartDrawer = new bootstrap.Offcanvas(cartDrawerEl);
-
 				cartButton.addEventListener("click", function () {
 					fetch("/cart/fragment")
 						.then(res => res.text())
@@ -74,8 +116,7 @@
 		});
 	</script>
 
-	<!-- ✅ カート削除・更新などのAjax処理 -->
+	<!-- ✅ カートJS共通スクリプト -->
 	<div th:replace="fragments/cart_script.html"></div>
 </body>
-
 </html>

@@ -13,10 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    /**
-     * パスワードエンコーダーの設定（明文パスワードを使用）
-     * 自作のログインロジックを使っているため、ここではエンコードを行わない
-     */
+   
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();

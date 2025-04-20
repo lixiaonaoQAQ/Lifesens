@@ -12,6 +12,9 @@ public interface ProductService {
 	// 全ての商品を取得する
 	List<ProductInfo> findAllProducts();
 
+	// ProductService.java
+	List<ProductInfo> findByCategoryId(Integer categoryId);
+
 	// IDで商品を取得する
 	ProductInfo findProductById(Integer productId);
 

@@ -8,20 +8,12 @@ import org.springframework.stereotype.Service;
 import com.Lifesens.entity.Category;
 import com.Lifesens.repository.CategoryRepository;
 
-/**
- * カテゴリサービスの実装クラス
- * カテゴリ情報の取得・更新などのビジネスロジックを提供
- */
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
 
-    /**
-     * 全てのカテゴリを取得する
-     * @return カテゴリ一覧
-     */
     @Override
     public List<Category> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
@@ -29,11 +21,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categories;
     }
 
-    /**
-     * 指定されたIDのカテゴリ名を更新する
-     * @param categoryId カテゴリID
-     * @param categoryName 新しいカテゴリ名
-     */
+    @Override
+    public List<Category> findAll() {
+        // getAllCategories() をそのまま再利用
+        return getAllCategories();
+    }
+
     @Override
     public void updateCategoryName(Integer categoryId, String categoryName) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
@@ -43,11 +36,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    /**
-     * 指定されたIDのカテゴリを取得する
-     * @param categoryId カテゴリID
-     * @return 該当するカテゴリ（存在しない場合は null）
-     */
     @Override
     public Category findCategoryById(Integer categoryId) {
         return categoryRepository.findById(categoryId).orElse(null);

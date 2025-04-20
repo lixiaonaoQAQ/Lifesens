@@ -1,77 +1,82 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <title>注文詳細 | 管理者</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>注文詳細 | 管理者</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-<div class="container mt-5">
-  <h2>注文詳細</h2>
+	<div th:replace="fragments/admin_header :: adminHeader"></div>
+	<div class="container mt-5">
+		<h2>注文詳細</h2>
 
-  <!-- フラッシュメッセージ -->
-  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+		<!-- フラッシュメッセージ -->
+		<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+		<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-  <!-- 注文情報 -->
-  <div class="mb-4">
-    <p><strong>注文ID：</strong> <span th:text="${order.orderId}">1</span></p>
-    <p><strong>注文日時：</strong> <span th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}">2025/01/01</span></p>
-    <p><strong>受取人：</strong> <span th:text="${order.receiverName}">山田 太郎</span></p>
-    <p><strong>電話番号：</strong> <span th:text="${order.receiverPhone}">090-1234-5678</span></p>
-    <p><strong>住所：</strong> <span th:text="${order.receiverAddress}">東京都新宿区…</span></p>
-    <p><strong>配送方法：</strong> <span th:text="${order.shippingMethod}">packet</span></p>
-    <p><strong>支払い方法：</strong> <span th:text="${order.paymentMethod}">card</span></p>
-  </div>
+		<!-- 注文情報 -->
+		<div class="mb-4">
+			<p><strong>注文ID：</strong> <span th:text="${order.orderId}">1</span></p>
+			<p><strong>注文日時：</strong> <span
+					th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}">2025/01/01</span></p>
+			<p><strong>受取人：</strong> <span th:text="${order.receiverName}">山田 太郎</span></p>
+			<p><strong>電話番号：</strong> <span th:text="${order.receiverPhone}">090-1234-5678</span></p>
+			<p><strong>住所：</strong> <span th:text="${order.receiverAddress}">東京都新宿区…</span></p>
+			<p><strong>配送方法：</strong> <span th:text="${order.shippingMethod}">packet</span></p>
+			<p><strong>支払い方法：</strong> <span th:text="${order.paymentMethod}">card</span></p>
+		</div>
 
-  <!-- ステータス表示と変更 -->
-  <div class="mb-4">
-    <p><strong>現在のステータス：</strong> <span th:text="${order.status}" class="text-primary fw-bold">未発送</span></p>
+		<!-- ステータス表示と変更 -->
+		<div class="mb-4">
+			<p><strong>現在のステータス：</strong> <span th:text="${order.status}" class="text-primary fw-bold">未発送</span></p>
 
-    <form th:action="@{/admin/orders/update-status}" method="post" class="row g-3 align-items-center">
-      <input type="hidden" name="orderId" th:value="${order.orderId}" />
+			<form th:action="@{/admin/orders/update-status}" method="post" class="row g-3 align-items-center">
+				<input type="hidden" name="orderId" th:value="${order.orderId}" />
 
-      <div class="col-auto">
-        <label for="status" class="col-form-label fw-bold">ステータス変更：</label>
-      </div>
-      <div class="col-auto">
-        <select id="status" name="status" class="form-select">
-          <option value="未発送" th:selected="${order.status == '未発送'}">未発送</option>
-          <option value="発送準備中" th:selected="${order.status == '発送準備中'}">発送準備中</option>
-          <option value="発送済み" th:selected="${order.status == '発送済み'}">発送済み</option>
-          <option value="キャンセル" th:selected="${order.status == 'キャンセル'}">キャンセル</option>
-        </select>
-      </div>
-      <div class="col-auto">
-        <button type="submit" class="btn btn-primary">更新</button>
-      </div>
-    </form>
-  </div>
+				<div class="col-auto">
+					<label for="status" class="col-form-label fw-bold">ステータス変更：</label>
+				</div>
+				<div class="col-auto">
+					<select id="status" name="status" class="form-select">
+						<option value="未発送" th:selected="${order.status == '未発送'}">未発送</option>
+						<option value="発送準備中" th:selected="${order.status == '発送準備中'}">発送準備中</option>
+						<option value="発送済み" th:selected="${order.status == '発送済み'}">発送済み</option>
+						<option value="キャンセル" th:selected="${order.status == 'キャンセル'}">キャンセル</option>
+					</select>
+				</div>
+				<div class="col-auto">
+					<button type="submit" class="btn btn-primary">更新</button>
+				</div>
+			</form>
+		</div>
 
-  <!-- 商品明細 -->
-  <h5>商品明細</h5>
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>商品名</th>
-      <th>数量</th>
-      <th>単価</th>
-      <th>小計</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${items}">
-      <td th:text="${item.productName}">シャツ</td>
-      <td th:text="${item.quantity}">2</td>
-      <td>¥<span th:text="${item.unitPrice}">2990</span></td>
-      <td>¥<span th:text="${item.totalPrice}">5980</span></td>
-    </tr>
-    </tbody>
-  </table>
+		<!-- 商品明細 -->
+		<h5>商品明細</h5>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>商品名</th>
+					<th>数量</th>
+					<th>単価</th>
+					<th>小計</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${items}">
+					<td th:text="${item.productName}">シャツ</td>
+					<td th:text="${item.quantity}">2</td>
+					<td>¥<span th:text="${item.unitPrice}">2990</span></td>
+					<td>¥<span th:text="${item.totalPrice}">5980</span></td>
+				</tr>
+			</tbody>
+		</table>
 
-  <p class="text-end fw-bold">合計金額：¥<span th:text="${order.totalPrice}">0</span></p>
+		<p class="text-end fw-bold">合計金額：¥<span th:text="${order.totalPrice}">0</span></p>
 
-  <a href="/admin/orders" class="btn btn-secondary">← 一覧に戻る</a>
-</div>
+		<a href="/admin/orders" class="btn btn-secondary">← 一覧に戻る</a>
+	</div>
 </body>
+
 </html>
